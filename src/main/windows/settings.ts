@@ -24,7 +24,7 @@ export function showSettings(): BrowserWindow {
     title: 'Monitor Overlay - Settings',
     autoHideMenuBar: true,
     backgroundColor: '#0b0b0c',
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
