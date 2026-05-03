@@ -1,9 +1,17 @@
-import { BrowserWindow, shell } from 'electron'
+import { BrowserWindow, nativeImage, shell } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
-import icon from '../../../resources/icon.png?asset'
 import log from '../logger'
 import { updateConfig } from '../config'
+
+function loadIcon(): Electron.NativeImage {
+  const iconPath = join(__dirname, '../../resources/icon.png')
+  const image = nativeImage.createFromPath(iconPath)
+  if (image.isEmpty()) {
+    log.warn('Settings window icon not found at', iconPath)
+  }
+  return image
+}
 
 let settingsWindow: BrowserWindow | null = null
 
@@ -15,6 +23,7 @@ export function showSettings(): BrowserWindow {
     return settingsWindow
   }
 
+  const icon = loadIcon()
   const win = new BrowserWindow({
     width: 960,
     height: 720,
@@ -31,6 +40,8 @@ export function showSettings(): BrowserWindow {
       contextIsolation: true
     }
   })
+
+  if (!icon.isEmpty()) win.setIcon(icon)
 
   win.on('ready-to-show', () => {
     win.show()
