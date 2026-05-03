@@ -80,6 +80,7 @@ export function SourceList({ sources, statuses }: Props): ReactNode {
                   status={statuses[source.id]}
                   onToggleEnabled={() => void window.api.toggleSourceEnabled(source.id)}
                   onToggleMuted={() => void window.api.toggleSourceMuted(source.id)}
+                  onToggleStretch={() => void window.api.toggleSourceStretch(source.id)}
                   onReload={() => void window.api.reloadSource(source.id)}
                   onEdit={() => openEdit(source)}
                   onRemove={() => void window.api.removeSource(source.id)}

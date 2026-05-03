@@ -65,7 +65,8 @@ function migrate(raw: unknown): AppConfig {
                   name: s.name ?? 'Untitled',
                   url: s.url ?? '',
                   enabled: s.enabled ?? true,
-                  muted: s.muted ?? false
+                  muted: s.muted ?? false,
+                  stretchToFill: s.stretchToFill ?? false
                 }))
               : []
           }))

@@ -4,6 +4,7 @@ export type SourceConfig = {
   url: string
   enabled: boolean
   muted: boolean
+  stretchToFill: boolean
 }
 
 export type RectConfig = {
@@ -72,6 +73,7 @@ export type IpcChannels = {
   'config:reorder-sources': (orderedIds: string[]) => void
   'config:toggle-source-enabled': (id: string) => void
   'config:toggle-source-muted': (id: string) => void
+  'config:toggle-source-stretch': (id: string) => void
   'config:set-hotkey': (action: HotkeyAction, accelerator: string | null) => void
   'config:set-autostart': (enabled: boolean) => void
   'overlay:reload-source': (id: string) => void

@@ -28,6 +28,8 @@ const api = {
     ipcRenderer.invoke('config:toggle-source-enabled', id),
   toggleSourceMuted: (id: string): Promise<void> =>
     ipcRenderer.invoke('config:toggle-source-muted', id),
+  toggleSourceStretch: (id: string): Promise<void> =>
+    ipcRenderer.invoke('config:toggle-source-stretch', id),
   setHotkey: (action: HotkeyAction, accelerator: string | null): Promise<void> =>
     ipcRenderer.invoke('config:set-hotkey', action, accelerator),
   setAutostart: (enabled: boolean): Promise<void> =>

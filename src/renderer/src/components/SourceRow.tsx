@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
   GripVertical,
+  Maximize2,
   Pencil,
   RotateCw,
   Terminal,
@@ -22,6 +23,7 @@ type Props = {
   status: SourceStatus | undefined
   onToggleEnabled: () => void
   onToggleMuted: () => void
+  onToggleStretch: () => void
   onReload: () => void
   onEdit: () => void
   onRemove: () => void
@@ -33,6 +35,7 @@ export function SourceRow({
   status,
   onToggleEnabled,
   onToggleMuted,
+  onToggleStretch,
   onReload,
   onEdit,
   onRemove,
@@ -113,6 +116,20 @@ export function SourceRow({
           title={source.muted ? 'Unmute' : 'Mute'}
         >
           {source.muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggleStretch}
+          title={
+            source.stretchToFill
+              ? 'Stretch to fill: on (overrides aspect-preserving letterboxing)'
+              : 'Stretch to fill: off (preserve source aspect ratio)'
+          }
+        >
+          <Maximize2
+            className={cn('h-4 w-4', source.stretchToFill && 'text-cyan-400')}
+          />
         </Button>
         <Button
           variant="ghost"

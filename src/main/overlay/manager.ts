@@ -2,7 +2,7 @@ import { BrowserWindow, WebContentsView } from 'electron'
 import { EventEmitter } from 'events'
 import log from '../logger'
 import { findDisplay } from '../displays'
-import { OBS_RESET_CSS, OUTLINE_THICKNESS_PX } from '../../shared/constants'
+import { OBS_RESET_CSS, OUTLINE_THICKNESS_PX, STRETCH_FIT_JS } from '../../shared/constants'
 import type {
   OverlayConfig,
   RectConfig,
@@ -234,8 +234,13 @@ export class OverlayManager extends EventEmitter {
 
     view.webContents.setAudioMuted(source.muted)
 
+    const sourceId = source.id
     view.webContents.on('dom-ready', () => {
       view.webContents.insertCSS(OBS_RESET_CSS).catch(() => {})
+      const current = this.overlay.sources.find((s) => s.id === sourceId)
+      if (current?.stretchToFill) {
+        view.webContents.executeJavaScript(STRETCH_FIT_JS).catch(() => {})
+      }
     })
     view.webContents.on('did-start-loading', () => {
       status.loading = true
@@ -314,6 +319,9 @@ export class OverlayManager extends EventEmitter {
 
       const urlChanged = prevSource ? prevSource.url !== source.url : false
       const enabledChanged = prevSource ? prevSource.enabled !== source.enabled : false
+      const stretchChanged = prevSource
+        ? prevSource.stretchToFill !== source.stretchToFill
+        : false
 
       if (enabledChanged && !source.enabled) {
         try {
@@ -323,7 +331,11 @@ export class OverlayManager extends EventEmitter {
           /* ignore */
         }
       }
-      if ((enabledChanged && source.enabled) || (urlChanged && source.enabled)) {
+      const needsReload =
+        (enabledChanged && source.enabled) ||
+        (urlChanged && source.enabled) ||
+        (stretchChanged && source.enabled)
+      if (needsReload) {
         if (source.url) {
           existing.status.loading = true
           existing.status.failed = false

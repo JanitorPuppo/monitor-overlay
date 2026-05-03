@@ -29,6 +29,77 @@ body > img:only-child {
 }
 `
 
+export const STRETCH_FIT_JS = `
+;(function () {
+  if (window.__monitorOverlayStretchInstalled) return
+  window.__monitorOverlayStretchInstalled = true
+
+  var SCALE_RE = /^\\s*scale\\(\\s*[\\d.]+\\s*\\)\\s*$/i
+  var rafId = 0
+
+  function fix(el) {
+    var cs = getComputedStyle(el)
+    var w = parseFloat(cs.width)
+    var h = parseFloat(cs.height)
+    if (!w || !h) return
+    var sx = window.innerWidth / w
+    var sy = window.innerHeight / h
+    el.style.transformOrigin = 'top left'
+    el.style.transform = 'scaleX(' + sx + ') scaleY(' + sy + ')'
+    var p = el.parentElement
+    if (p) {
+      var pcs = getComputedStyle(p)
+      if (pcs.display.indexOf('flex') !== -1) {
+        p.style.setProperty('display', 'block', 'important')
+      }
+    }
+  }
+
+  function scan() {
+    var els = document.querySelectorAll('*')
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i]
+      var t = el.style && el.style.transform
+      if (t && SCALE_RE.test(t)) fix(el)
+    }
+  }
+
+  function schedule() {
+    if (rafId) return
+    rafId = requestAnimationFrame(function () {
+      rafId = 0
+      scan()
+    })
+  }
+
+  schedule()
+
+  var obs = new MutationObserver(function (muts) {
+    for (var i = 0; i < muts.length; i++) {
+      var m = muts[i]
+      if (m.type === 'attributes' && m.attributeName === 'style') {
+        var t = m.target.style && m.target.style.transform
+        if (t && SCALE_RE.test(t)) {
+          schedule()
+          break
+        }
+      } else if (m.type === 'childList' && m.addedNodes.length) {
+        schedule()
+        break
+      }
+    }
+  })
+  obs.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['style'],
+    subtree: true,
+    childList: true
+  })
+
+  window.addEventListener('resize', schedule)
+})()
+`
+
 export const STATE_UPDATE_CHANNEL = 'state:update'
 
 export const HOTKEY_DEFAULTS = {

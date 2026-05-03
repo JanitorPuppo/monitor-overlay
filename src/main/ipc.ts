@@ -95,7 +95,8 @@ export function registerIpc(ctx: Ctx): void {
       name: input.name?.trim() || 'Untitled',
       url: input.url?.trim() || '',
       enabled: true,
-      muted: false
+      muted: false,
+      stretchToFill: false
     }
     updateConfig((draft) => {
       draft.overlays[0].sources.push(source)
@@ -156,6 +157,15 @@ export function registerIpc(ctx: Ctx): void {
     updateConfig((draft) => {
       const s = draft.overlays[0].sources.find((x) => x.id === id)
       if (s) s.muted = !s.muted
+    })
+    overlay.setOverlay(getConfig().overlays[0])
+    broadcastState(ctx)
+  })
+
+  ipcMain.handle('config:toggle-source-stretch', (_e, id: string) => {
+    updateConfig((draft) => {
+      const s = draft.overlays[0].sources.find((x) => x.id === id)
+      if (s) s.stretchToFill = !s.stretchToFill
     })
     overlay.setOverlay(getConfig().overlays[0])
     broadcastState(ctx)
