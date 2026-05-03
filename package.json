@@ -1,6 +1,6 @@
 {
   "name": "monitor-overlay",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Renders arbitrary URLs as transparent layered overlays on a chosen monitor.",
   "main": "./out/main/index.js",
   "author": {
