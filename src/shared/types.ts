@@ -51,12 +51,31 @@ export type SourceStatus = {
   errorMessage?: string
 }
 
+export type UpdateStatus =
+  | 'idle'
+  | 'checking'
+  | 'available'
+  | 'downloading'
+  | 'downloaded'
+  | 'not-available'
+  | 'error'
+  | 'disabled'
+
+export type UpdateState = {
+  status: UpdateStatus
+  version?: string
+  progressPercent?: number
+  errorMessage?: string
+  lastCheckedAt?: number
+}
+
 export type AppState = {
   config: AppConfig
   displays: DisplayInfo[]
   sourceStatuses: Record<string, SourceStatus>
   overlayActuallyVisible: boolean
   configuredDisplayPresent: boolean
+  update: UpdateState
 }
 
 export type AddSourceInput = { name: string; url: string }
@@ -80,5 +99,7 @@ export type IpcChannels = {
   'overlay:reload-all': () => void
   'overlay:toggle-visibility': () => void
   'overlay:open-devtools': (sourceId: string) => void
+  'update:check-now': () => void
+  'update:install-now': () => void
   'app:quit': () => void
 }

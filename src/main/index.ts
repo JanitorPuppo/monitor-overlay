@@ -69,7 +69,5 @@ async function bootstrap(): Promise<void> {
     if (BrowserWindow.getAllWindows().length === 0) showSettings()
   })
 
-  if (!process.env['ELECTRON_RENDERER_URL']) {
-    setupAutoUpdater()
-  }
+  setupAutoUpdater()
 }

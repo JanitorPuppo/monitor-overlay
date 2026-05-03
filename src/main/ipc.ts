@@ -6,6 +6,7 @@ import { listDisplays, findDisplay } from './displays'
 import { applyHotkeys } from './hotkeys'
 import { applyAutostart } from './autostart'
 import { pickRegion } from './region-picker'
+import { updater } from './updater'
 import { STATE_UPDATE_CHANNEL } from '../shared/constants'
 import type { OverlayManager } from './overlay/manager'
 import type {
@@ -42,7 +43,8 @@ export function buildState(ctx: Ctx): AppState {
     displays,
     sourceStatuses,
     overlayActuallyVisible: ctx.overlay.isVisible(),
-    configuredDisplayPresent
+    configuredDisplayPresent,
+    update: updater.getState()
   }
 }
 
@@ -62,6 +64,7 @@ export function registerIpc(ctx: Ctx): void {
     broadcastState(ctx)
   })
   overlay.on('changed', () => broadcastState(ctx))
+  updater.on('changed', () => broadcastState(ctx))
 
   ipcMain.handle('state:get', () => buildState(ctx))
 
@@ -202,6 +205,8 @@ export function registerIpc(ctx: Ctx): void {
     broadcastState(ctx)
   })
   ipcMain.handle('overlay:open-devtools', (_e, id: string) => overlay.openDevtools(id))
+  ipcMain.handle('update:check-now', () => void updater.checkNow())
+  ipcMain.handle('update:install-now', () => updater.installNow())
   ipcMain.handle('app:quit', () => {
     log.info('Quit from renderer')
     app.quit()

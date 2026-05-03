@@ -39,6 +39,8 @@ const api = {
   toggleVisibility: (): Promise<void> => ipcRenderer.invoke('overlay:toggle-visibility'),
   openDevtools: (sourceId: string): Promise<void> =>
     ipcRenderer.invoke('overlay:open-devtools', sourceId),
+  checkForUpdates: (): Promise<void> => ipcRenderer.invoke('update:check-now'),
+  installUpdateNow: (): Promise<void> => ipcRenderer.invoke('update:install-now'),
   quit: (): Promise<void> => ipcRenderer.invoke('app:quit'),
   pickRegion: (): Promise<void> => ipcRenderer.invoke('region:pick'),
   regionPickerSubmit: (

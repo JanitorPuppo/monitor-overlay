@@ -7,6 +7,7 @@ import { OutlineColorPicker } from './components/OutlineColorPicker'
 import { SourceList } from './components/SourceList'
 import { HotkeysSection } from './components/HotkeysSection'
 import { AppSection } from './components/AppSection'
+import { UpdateBanner } from './components/UpdateBanner'
 
 function App(): ReactNode {
   const state = useAppState()
@@ -54,6 +55,8 @@ function App(): ReactNode {
           </span>
         </div>
       </header>
+
+      <UpdateBanner update={state.update} />
 
       <Card>
         <CardHeader>
