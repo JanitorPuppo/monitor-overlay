@@ -6,13 +6,21 @@ export const OUTLINE_THICKNESS_PX = 2
 export const DEFAULT_OUTLINE_COLOR = '#00FFFF'
 
 export const OBS_RESET_CSS = `
-body {
+html, body {
   background-color: rgba(0, 0, 0, 0) !important;
-  margin: 0px auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   overflow: hidden !important;
 }
-html {
-  background-color: rgba(0, 0, 0, 0) !important;
+body > img:only-child {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
 }
 `
 
