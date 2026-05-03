@@ -23,7 +23,7 @@ export type OverlayConfig = {
   sources: SourceConfig[]
 }
 
-export type HotkeyAction = 'toggleVisibility' | 'reloadAll' | 'openSettings'
+export type HotkeyAction = 'toggleVisibility' | 'reloadAll' | 'openSettings' | 'muteAllToggle'
 
 export type HotkeyConfig = Partial<Record<HotkeyAction, string>>
 
@@ -33,6 +33,7 @@ export type AppConfig = {
   hotkeys: HotkeyConfig
   autostart: boolean
   overlayVisible: boolean
+  mutedAll: boolean
   settingsOpenOnLaunch: boolean
 }
 
@@ -97,6 +98,7 @@ export type IpcChannels = {
   'config:toggle-source-stretch': (id: string) => void
   'config:set-hotkey': (action: HotkeyAction, accelerator: string | null) => void
   'config:set-autostart': (enabled: boolean) => void
+  'config:set-muted-all': (enabled: boolean) => void
   'overlay:reload-source': (id: string) => void
   'overlay:reload-all': () => void
   'overlay:toggle-visibility': () => void

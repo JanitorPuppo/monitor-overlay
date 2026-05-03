@@ -38,6 +38,7 @@ function defaultConfig(): AppConfig {
     hotkeys: defaultHotkeys(),
     autostart: false,
     overlayVisible: true,
+    mutedAll: false,
     settingsOpenOnLaunch: true
   }
 }
@@ -51,6 +52,9 @@ function migrate(raw: unknown): AppConfig {
     !userHotkeys ||
     typeof userHotkeys !== 'object' ||
     Object.keys(userHotkeys as object).length === 0
+  const mergedHotkeys = hotkeysIsEmpty
+    ? defaultHotkeys()
+    : { ...defaultHotkeys(), ...userHotkeys }
   return {
     version: 1,
     overlays:
@@ -68,14 +72,15 @@ function migrate(raw: unknown): AppConfig {
                   url: s.url ?? '',
                   enabled: s.enabled ?? true,
                   muted: s.muted ?? false,
-                  stretchToFill: s.stretchToFill ?? false
+                  stretchToFill: s.stretchToFill ?? true
                 }))
               : []
           }))
         : base.overlays,
-    hotkeys: hotkeysIsEmpty ? defaultHotkeys() : userHotkeys,
+    hotkeys: mergedHotkeys,
     autostart: obj.autostart ?? false,
     overlayVisible: obj.overlayVisible ?? true,
+    mutedAll: obj.mutedAll ?? false,
     settingsOpenOnLaunch: obj.settingsOpenOnLaunch ?? true
   }
 }

@@ -21,12 +21,14 @@ export class OverlayManager extends EventEmitter {
   private sources: Map<string, SourceRuntime> = new Map()
   private overlay: OverlayConfig
   private wantsVisible: boolean
+  private allMuted: boolean
   private displayPresent = true
 
-  constructor(overlay: OverlayConfig, initiallyVisible: boolean) {
+  constructor(overlay: OverlayConfig, initiallyVisible: boolean, initiallyAllMuted: boolean) {
     super()
     this.overlay = structuredClone(overlay)
     this.wantsVisible = initiallyVisible
+    this.allMuted = initiallyAllMuted
   }
 
   start(): void {
@@ -67,6 +69,24 @@ export class OverlayManager extends EventEmitter {
 
   isVisible(): boolean {
     return this.wantsVisible && this.displayPresent
+  }
+
+  setMutedAll(muted: boolean): void {
+    if (this.allMuted === muted) return
+    this.allMuted = muted
+    for (const source of this.overlay.sources) {
+      const rt = this.sources.get(source.id)
+      if (rt) rt.view.webContents.setAudioMuted(this.shouldMute(source))
+    }
+    this.emit('changed')
+  }
+
+  isMutedAll(): boolean {
+    return this.allMuted
+  }
+
+  private shouldMute(source: SourceConfig): boolean {
+    return this.allMuted || source.muted || !source.enabled
   }
 
   isDisplayPresent(): boolean {
@@ -232,7 +252,7 @@ export class OverlayManager extends EventEmitter {
     const rt: SourceRuntime = { view, status }
     this.sources.set(source.id, rt)
 
-    view.webContents.setAudioMuted(source.muted)
+    view.webContents.setAudioMuted(this.shouldMute(source))
 
     const sourceId = source.id
     view.webContents.on('dom-ready', () => {
@@ -275,7 +295,7 @@ export class OverlayManager extends EventEmitter {
       this.layoutChildren()
     })
 
-    if (source.enabled && source.url) {
+    if (source.url) {
       view.webContents.loadURL(source.url).catch((err) => {
         status.loading = false
         status.failed = true
@@ -315,39 +335,25 @@ export class OverlayManager extends EventEmitter {
         continue
       }
 
-      existing.view.webContents.setAudioMuted(source.muted)
+      existing.view.webContents.setAudioMuted(this.shouldMute(source))
 
       const urlChanged = prevSource ? prevSource.url !== source.url : false
-      const enabledChanged = prevSource ? prevSource.enabled !== source.enabled : false
       const stretchChanged = prevSource
         ? prevSource.stretchToFill !== source.stretchToFill
         : false
 
-      if (enabledChanged && !source.enabled) {
-        try {
-          existing.view.webContents.stop()
-          existing.view.webContents.loadURL('about:blank').catch(() => {})
-        } catch {
-          /* ignore */
-        }
-      }
-      const needsReload =
-        (enabledChanged && source.enabled) ||
-        (urlChanged && source.enabled) ||
-        (stretchChanged && source.enabled)
+      const needsReload = (urlChanged || stretchChanged) && !!source.url
       if (needsReload) {
-        if (source.url) {
-          existing.status.loading = true
-          existing.status.failed = false
-          existing.status.errorMessage = undefined
+        existing.status.loading = true
+        existing.status.failed = false
+        existing.status.errorMessage = undefined
+        this.emit('status', existing.status)
+        existing.view.webContents.loadURL(source.url).catch((err) => {
+          existing.status.loading = false
+          existing.status.failed = true
+          existing.status.errorMessage = String(err?.message ?? err)
           this.emit('status', existing.status)
-          existing.view.webContents.loadURL(source.url).catch((err) => {
-            existing.status.loading = false
-            existing.status.failed = true
-            existing.status.errorMessage = String(err?.message ?? err)
-            this.emit('status', existing.status)
-          })
-        }
+        })
       }
     }
 

@@ -1,6 +1,7 @@
 import { globalShortcut } from 'electron'
 import log from './logger'
 import { showSettings } from './windows/settings'
+import { updateConfig } from './config'
 import type { OverlayManager } from './overlay/manager'
 import type { HotkeyAction, HotkeyConfig } from '../shared/types'
 
@@ -13,7 +14,14 @@ export function applyHotkeys(config: HotkeyConfig, overlay: OverlayManager): voi
   const handlers: Record<HotkeyAction, () => void> = {
     toggleVisibility: () => overlay.setVisible(!overlay.isVisible()),
     reloadAll: () => overlay.reloadAll(),
-    openSettings: () => showSettings()
+    openSettings: () => showSettings(),
+    muteAllToggle: () => {
+      const next = !overlay.isMutedAll()
+      updateConfig((draft) => {
+        draft.mutedAll = next
+      })
+      overlay.setMutedAll(next)
+    }
   }
 
   for (const action of Object.keys(handlers) as HotkeyAction[]) {

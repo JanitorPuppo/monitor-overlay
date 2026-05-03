@@ -3,6 +3,7 @@ import { join } from 'path'
 import log from './logger'
 import { showSettings } from './windows/settings'
 import { updater } from './updater'
+import { updateConfig } from './config'
 import type { OverlayManager } from './overlay/manager'
 
 let tray: Tray | null = null
@@ -33,6 +34,7 @@ export function refreshMenu(overlay: OverlayManager): void {
   if (!tray) return
   const visible = overlay.isVisible()
   const present = overlay.isDisplayPresent()
+  const allMuted = overlay.isMutedAll()
   const update = updater.getState()
 
   const updateItems: MenuItemConstructorOptions[] = []
@@ -59,6 +61,18 @@ export function refreshMenu(overlay: OverlayManager): void {
       label: visible ? 'Hide overlay' : 'Show overlay',
       enabled: present,
       click: () => overlay.setVisible(!visible)
+    },
+    {
+      label: allMuted ? 'Unmute all sources' : 'Mute all sources',
+      type: 'checkbox',
+      checked: allMuted,
+      click: () => {
+        const next = !allMuted
+        updateConfig((draft) => {
+          draft.mutedAll = next
+        })
+        overlay.setMutedAll(next)
+      }
     },
     {
       label: 'Reload all sources',

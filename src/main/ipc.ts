@@ -202,6 +202,14 @@ export function registerIpc(ctx: Ctx): void {
     broadcastState(ctx)
   })
 
+  ipcMain.handle('config:set-muted-all', (_e, enabled: boolean) => {
+    updateConfig((draft) => {
+      draft.mutedAll = enabled
+    })
+    overlay.setMutedAll(enabled)
+    broadcastState(ctx)
+  })
+
   ipcMain.handle('overlay:reload-source', (_e, id: string) => overlay.reloadSource(id))
   ipcMain.handle('overlay:reload-all', () => overlay.reloadAll())
   ipcMain.handle('overlay:toggle-visibility', () => {

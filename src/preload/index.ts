@@ -36,6 +36,8 @@ const api = {
     ipcRenderer.invoke('config:set-hotkey', action, accelerator),
   setAutostart: (enabled: boolean): Promise<void> =>
     ipcRenderer.invoke('config:set-autostart', enabled),
+  setMutedAll: (enabled: boolean): Promise<void> =>
+    ipcRenderer.invoke('config:set-muted-all', enabled),
   reloadSource: (id: string): Promise<void> => ipcRenderer.invoke('overlay:reload-source', id),
   reloadAll: (): Promise<void> => ipcRenderer.invoke('overlay:reload-all'),
   toggleVisibility: (): Promise<void> => ipcRenderer.invoke('overlay:toggle-visibility'),

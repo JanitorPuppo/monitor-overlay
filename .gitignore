@@ -6,3 +6,4 @@ out
 *.log*
 npm-install.log
 .vite-cache
+*.tsbuildinfo

@@ -9,7 +9,8 @@ import type { HotkeyAction, HotkeyConfig } from '../../../shared/types'
 const ROWS: { action: HotkeyAction; label: string }[] = [
   { action: 'toggleVisibility', label: 'Toggle overlay visibility' },
   { action: 'reloadAll', label: 'Reload all sources' },
-  { action: 'openSettings', label: 'Open settings' }
+  { action: 'openSettings', label: 'Open settings' },
+  { action: 'muteAllToggle', label: 'Mute all sources (toggle)' }
 ]
 
 type Props = { hotkeys: HotkeyConfig }

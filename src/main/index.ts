@@ -43,7 +43,7 @@ async function bootstrap(): Promise<void> {
   const config = await loadConfig()
   log.info('App starting', { firstRun: isFirstRun(config) })
 
-  const overlay = new OverlayManager(config.overlays[0], config.overlayVisible)
+  const overlay = new OverlayManager(config.overlays[0], config.overlayVisible, config.mutedAll)
   overlay.start()
 
   const ctx = { overlay }

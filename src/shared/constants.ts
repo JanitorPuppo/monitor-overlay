@@ -105,5 +105,6 @@ export const STATE_UPDATE_CHANNEL = 'state:update'
 export const HOTKEY_DEFAULTS = {
   toggleVisibility: 'Ctrl+Alt+O',
   reloadAll: 'Ctrl+Alt+R',
-  openSettings: 'Ctrl+Alt+,'
+  openSettings: 'Ctrl+Alt+,',
+  muteAllToggle: 'Ctrl+Alt+M'
 } as const

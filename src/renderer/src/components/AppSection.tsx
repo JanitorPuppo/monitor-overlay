@@ -32,6 +32,19 @@ export function AppSection({ state }: Props): ReactNode {
 
       <div className="flex items-center justify-between rounded-md border border-neutral-800 px-3 py-2">
         <div>
+          <div className="text-sm text-neutral-100">Mute all sources</div>
+          <div className="text-xs text-neutral-400">
+            Master mute. Per-source mute settings are preserved.
+          </div>
+        </div>
+        <Switch
+          checked={config.mutedAll}
+          onCheckedChange={(checked) => void window.api.setMutedAll(checked)}
+        />
+      </div>
+
+      <div className="flex items-center justify-between rounded-md border border-neutral-800 px-3 py-2">
+        <div>
           <div className="text-sm text-neutral-100">Start with Windows</div>
           <div className="text-xs text-neutral-400">Launch hidden in tray on login.</div>
         </div>
