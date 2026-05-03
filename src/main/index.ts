@@ -10,6 +10,7 @@ import { applyHotkeys, disposeHotkeys } from './hotkeys'
 import { applyAutostart } from './autostart'
 import { onDisplaysChanged } from './displays'
 import { registerIpc, broadcastState } from './ipc'
+import { registerRegionPickerHandlers } from './region-picker'
 import { setupAutoUpdater } from './updater'
 
 const gotLock = app.requestSingleInstanceLock()
@@ -46,6 +47,7 @@ async function bootstrap(): Promise<void> {
   overlay.start()
 
   const ctx = { overlay }
+  registerRegionPickerHandlers()
   registerIpc(ctx)
   createTray(overlay)
 

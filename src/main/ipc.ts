@@ -5,6 +5,7 @@ import { getConfig, updateConfig } from './config'
 import { listDisplays, findDisplay } from './displays'
 import { applyHotkeys } from './hotkeys'
 import { applyAutostart } from './autostart'
+import { pickRegion } from './region-picker'
 import { STATE_UPDATE_CHANNEL } from '../shared/constants'
 import type { OverlayManager } from './overlay/manager'
 import type {
@@ -194,5 +195,26 @@ export function registerIpc(ctx: Ctx): void {
   ipcMain.handle('app:quit', () => {
     log.info('Quit from renderer')
     app.quit()
+  })
+
+  ipcMain.handle('region:pick', async () => {
+    const cfg = getConfig().overlays[0]
+    const wasVisible = overlay.isVisible()
+    overlay.setVisible(false)
+    try {
+      const result = await pickRegion(cfg.displayId, cfg.rect)
+      if (result) {
+        updateConfig((draft) => {
+          draft.overlays[0].displayId = result.displayId
+          draft.overlays[0].rect = result.rect
+        })
+        overlay.setOverlay(getConfig().overlays[0])
+      }
+    } catch (err) {
+      log.error('region:pick failed', err)
+    } finally {
+      overlay.setVisible(wasVisible)
+      broadcastState(ctx)
+    }
   })
 }

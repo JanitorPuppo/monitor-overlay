@@ -1,121 +1,69 @@
-import { ReactNode, useEffect, useState } from 'react'
-import { Input } from './ui/input'
+import { ReactNode, useState } from 'react'
+import { Crop, RotateCcw } from 'lucide-react'
+import { Button } from './ui/button'
 import { Label } from './ui/label'
-import { Switch } from './ui/switch'
 import type { DisplayInfo, RectConfig } from '../../../shared/types'
 
 type Props = {
   rect: RectConfig
   display: DisplayInfo | undefined
-  onChange: (rect: RectConfig) => void
+  onPickRegion: () => Promise<void>
+  onResetToFill: () => void
 }
 
-type Draft = { x: string; y: string; width: string; height: string }
+export function RectEditor({ rect, display, onPickRegion, onResetToFill }: Props): ReactNode {
+  const [picking, setPicking] = useState(false)
 
-function rectToDraft(rect: RectConfig, display: DisplayInfo | undefined): Draft {
-  if (rect) {
-    return {
-      x: String(rect.x),
-      y: String(rect.y),
-      width: String(rect.width),
-      height: String(rect.height)
+  const startPick = async (): Promise<void> => {
+    setPicking(true)
+    try {
+      await onPickRegion()
+    } finally {
+      setPicking(false)
     }
   }
-  if (display) {
-    return {
-      x: '0',
-      y: '0',
-      width: String(display.workArea.width),
-      height: String(display.workArea.height)
+
+  const summary = ((): { headline: string; sub: string | null } => {
+    if (!display) {
+      return { headline: 'Display unavailable', sub: 'Reconnect the configured display.' }
     }
-  }
-  return { x: '0', y: '0', width: '0', height: '0' }
-}
-
-function draftToRect(d: Draft): RectConfig {
-  const x = Math.max(0, Math.floor(Number(d.x) || 0))
-  const y = Math.max(0, Math.floor(Number(d.y) || 0))
-  const width = Math.max(1, Math.floor(Number(d.width) || 1))
-  const height = Math.max(1, Math.floor(Number(d.height) || 1))
-  return { x, y, width, height }
-}
-
-export function RectEditor({ rect, display, onChange }: Props): ReactNode {
-  const fillMode = rect === null
-  const [draft, setDraft] = useState<Draft>(() => rectToDraft(rect, display))
-
-  useEffect(() => {
-    setDraft(rectToDraft(rect, display))
-  }, [rect, display])
-
-  const setField = (key: keyof Draft, value: string): void => {
-    const next = { ...draft, [key]: value }
-    setDraft(next)
-    onChange(draftToRect(next))
-  }
+    if (rect === null) {
+      return {
+        headline: `Filling work area · ${display.workArea.width}×${display.workArea.height}`,
+        sub: 'No custom region. Pick one to constrain the overlay to a sub-region.'
+      }
+    }
+    return {
+      headline: `Custom region · ${rect.width}×${rect.height} at (${rect.x}, ${rect.y})`,
+      sub: `Relative to the work area of ${display.label}.`
+    }
+  })()
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Label>Region</Label>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-neutral-400">Fill work area</span>
-          <Switch
-            checked={fillMode}
-            onCheckedChange={(checked) =>
-              checked ? onChange(null) : onChange(draftToRect(draft))
-            }
-          />
-        </div>
+      <Label>Region</Label>
+      <div className="rounded-md border border-neutral-800 bg-neutral-900/40 p-3">
+        <div className="text-sm text-neutral-100">{summary.headline}</div>
+        {summary.sub ? (
+          <div className="mt-0.5 text-xs text-neutral-400">{summary.sub}</div>
+        ) : null}
       </div>
-      <div className="grid grid-cols-4 gap-2">
-        <div>
-          <Label className="mb-1 block">X</Label>
-          <Input
-            type="number"
-            min={0}
-            value={draft.x}
-            disabled={fillMode}
-            onChange={(e) => setField('x', e.target.value)}
-          />
-        </div>
-        <div>
-          <Label className="mb-1 block">Y</Label>
-          <Input
-            type="number"
-            min={0}
-            value={draft.y}
-            disabled={fillMode}
-            onChange={(e) => setField('y', e.target.value)}
-          />
-        </div>
-        <div>
-          <Label className="mb-1 block">Width</Label>
-          <Input
-            type="number"
-            min={1}
-            value={draft.width}
-            disabled={fillMode}
-            onChange={(e) => setField('width', e.target.value)}
-          />
-        </div>
-        <div>
-          <Label className="mb-1 block">Height</Label>
-          <Input
-            type="number"
-            min={1}
-            value={draft.height}
-            disabled={fillMode}
-            onChange={(e) => setField('height', e.target.value)}
-          />
-        </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button onClick={startPick} disabled={picking} size="sm">
+          <Crop className="h-4 w-4" />
+          {picking ? 'Picking on screen…' : rect ? 'Re-pick region' : 'Pick region on screen'}
+        </Button>
+        {rect ? (
+          <Button variant="outline" onClick={onResetToFill} disabled={picking} size="sm">
+            <RotateCcw className="h-4 w-4" />
+            Reset to fill work area
+          </Button>
+        ) : null}
       </div>
-      {display ? (
-        <div className="text-[11px] text-neutral-500">
-          Coordinates are relative to {display.label} work area (
-          {display.workArea.width}×{display.workArea.height}).
-        </div>
-      ) : null}
+      <p className="text-[11px] text-neutral-500">
+        The picker covers every connected display. Click and drag to draw the region; the
+        overlay will move to whichever display you draw on.
+      </p>
     </div>
   )
 }

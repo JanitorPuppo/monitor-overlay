@@ -70,7 +70,7 @@ export function SourceDialog({ open, editing, onClose }: Props): ReactNode {
       description={
         editing
           ? 'Update the URL or display name. Changes are saved when you click Save.'
-          : 'Provide a friendly name and the URL to render. The transparent OBS reset CSS is injected automatically.'
+          : 'Provide a friendly name and the URL to render.'
       }
       footer={
         <>

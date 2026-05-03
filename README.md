@@ -1,26 +1,24 @@
 # Monitor Overlay
 
-Renders arbitrary URLs as transparent, layered web sources directly onto a chosen monitor (or a sub-region of one). Built for OBS-style browser-source widgets — chat boxes, alerts, dashboards — overlaid on the desktop instead of inside OBS.
+Renders arbitrary URLs as transparent, layered web sources directly onto a chosen monitor (or a sub-region of one). Built for use with [Remote Deck](https://remotedeck.gg), allowing streamers to collaborate with their producers when monitor space is limited. 
 
 ## Features
 
-- Multiple URLs stacked as full-bleed transparent layers (top of list → behind, bottom → in front)
-- Pick the target display + an optional rect within it
-- Always click-through and always-on-top (above fullscreen apps)
-- OBS reset CSS (`body { background: rgba(0,0,0,0); margin: 0 auto; overflow: hidden; }`) auto-injected on every load
+- Loads and renders URLs in the order you specify
+- Pick the target display or optionally a select within it
+- Always on top, completely click through so you can see whats happening without preventing you from gaming
+- Transparent layers, just like OBS does with multiple browser sources layered.
 - Per-source enable / mute / reload / DevTools
-- Drag-to-reorder z-order with live overlay updates
-- Cyan outline (configurable color) so you can always see where the overlay lives
-- Tray icon + dedicated settings window (no manual JSON editing)
+- Drag-to-reorder layers with live overlay updates
+- Configurable colored outline so you can always see when its on and where the overlay lives
+- Tray icon + dedicated settings window
 - Optional global hotkeys for show/hide, reload-all, open-settings
-- Auto-update via GitHub Releases
-- Auto-hides when the configured display is disconnected; auto-restores when it returns
+- Auto-updates
 
 ## Constraints
 
-- **Windows-only** (NSIS installer)
-- **No interactivity inside the overlay** — sources must be self-authenticating (tokenized URLs); login flows do not work
-- **No code signing** in the published builds — Windows SmartScreen will warn on first install and on auto-updates
+- **Windows-only**
+- **No interactivity inside the overlay**
 
 ## Develop
 

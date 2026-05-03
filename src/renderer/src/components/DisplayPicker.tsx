@@ -25,7 +25,7 @@ export function DisplayPicker({ displays, selectedId, present, onChange }: Props
         {displays.map((d) => (
           <option key={d.id} value={d.id}>
             {d.label}
-            {d.isPrimary ? ' — Primary' : ''}
+            {d.isPrimary ? ' - Primary' : ''}
           </option>
         ))}
         {!displays.some((d) => d.id === selectedId) ? (

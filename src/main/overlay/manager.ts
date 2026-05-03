@@ -25,7 +25,7 @@ export class OverlayManager extends EventEmitter {
 
   constructor(overlay: OverlayConfig, initiallyVisible: boolean) {
     super()
-    this.overlay = overlay
+    this.overlay = structuredClone(overlay)
     this.wantsVisible = initiallyVisible
   }
 
@@ -45,15 +45,18 @@ export class OverlayManager extends EventEmitter {
 
   setOverlay(next: OverlayConfig): void {
     const prev = this.overlay
-    this.overlay = next
+    this.overlay = structuredClone(next)
 
-    if (prev.displayId !== next.displayId || !this.rectEqual(prev.rect, next.rect)) {
+    if (
+      prev.displayId !== this.overlay.displayId ||
+      !this.rectEqual(prev.rect, this.overlay.rect)
+    ) {
       this.repositionHost()
     }
-    if (prev.outlineColor !== next.outlineColor) {
+    if (prev.outlineColor !== this.overlay.outlineColor) {
       this.applyOutline()
     }
-    this.reconcileSources(prev.sources, next.sources)
+    this.reconcileSources(prev.sources, this.overlay.sources)
     this.applyVisibility()
   }
 
@@ -160,9 +163,10 @@ export class OverlayManager extends EventEmitter {
     this.host = win
 
     this.installOutline()
-    for (const source of this.overlay.sources) {
+    for (const source of [...this.overlay.sources].reverse()) {
       this.addSourceView(source)
     }
+    this.applyZOrder()
     this.layoutChildren()
   }
 
@@ -239,6 +243,12 @@ export class OverlayManager extends EventEmitter {
       status.errorMessage = undefined
       this.emit('status', status)
     })
+    view.webContents.on('did-stop-loading', () => {
+      if (!status.failed) {
+        status.loading = false
+        this.emit('status', status)
+      }
+    })
     view.webContents.on('did-finish-load', () => {
       status.loading = false
       status.failed = false
@@ -299,14 +309,11 @@ export class OverlayManager extends EventEmitter {
         this.addSourceView(source)
         continue
       }
-      if (!prevSource) continue
 
-      if (prevSource.muted !== source.muted) {
-        existing.view.webContents.setAudioMuted(source.muted)
-      }
+      existing.view.webContents.setAudioMuted(source.muted)
 
-      const urlChanged = prevSource.url !== source.url
-      const enabledChanged = prevSource.enabled !== source.enabled
+      const urlChanged = prevSource ? prevSource.url !== source.url : false
+      const enabledChanged = prevSource ? prevSource.enabled !== source.enabled : false
 
       if (enabledChanged && !source.enabled) {
         try {
@@ -332,14 +339,14 @@ export class OverlayManager extends EventEmitter {
       }
     }
 
-    this.reorderViews(next.map((s) => s.id))
+    this.applyZOrder()
     this.layoutChildren()
   }
 
-  private reorderViews(orderedIds: string[]): void {
+  private applyZOrder(): void {
     if (!this.host) return
-    for (const id of orderedIds) {
-      const rt = this.sources.get(id)
+    for (const source of [...this.overlay.sources].reverse()) {
+      const rt = this.sources.get(source.id)
       if (!rt) continue
       this.host.contentView.removeChildView(rt.view)
       this.host.contentView.addChildView(rt.view)

@@ -69,7 +69,8 @@ function App(): ReactNode {
           <RectEditor
             rect={overlay.rect}
             display={display}
-            onChange={(rect) => void window.api.setRect(rect)}
+            onPickRegion={() => window.api.pickRegion()}
+            onResetToFill={() => void window.api.setRect(null)}
           />
           <OutlineColorPicker
             color={overlay.outlineColor}
@@ -97,7 +98,7 @@ function App(): ReactNode {
       </Card>
 
       <footer className="pb-4 text-center text-[10px] text-neutral-500">
-        Click-through is always on — you cannot click into widgets. Sources must use
+        Click-through is always on; you cannot click into widgets. Sources must use
         self-authenticating URLs.
       </footer>
     </div>

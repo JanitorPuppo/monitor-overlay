@@ -62,7 +62,7 @@ export function refreshMenu(overlay: OverlayManager): void {
     }
   ])
   tray.setContextMenu(menu)
-  tray.setToolTip(present ? 'Monitor Overlay' : 'Monitor Overlay — display disconnected')
+  tray.setToolTip(present ? 'Monitor Overlay' : 'Monitor Overlay - display disconnected')
 }
 
 export function destroyTray(): void {

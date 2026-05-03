@@ -21,7 +21,7 @@ export function showSettings(): BrowserWindow {
     minWidth: 720,
     minHeight: 500,
     show: false,
-    title: 'Monitor Overlay — Settings',
+    title: 'Monitor Overlay - Settings',
     autoHideMenuBar: true,
     backgroundColor: '#0b0b0c',
     ...(process.platform === 'linux' ? { icon } : {}),

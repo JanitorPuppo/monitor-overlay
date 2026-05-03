@@ -38,6 +38,12 @@ const api = {
   openDevtools: (sourceId: string): Promise<void> =>
     ipcRenderer.invoke('overlay:open-devtools', sourceId),
   quit: (): Promise<void> => ipcRenderer.invoke('app:quit'),
+  pickRegion: (): Promise<void> => ipcRenderer.invoke('region:pick'),
+  regionPickerSubmit: (
+    displayId: number,
+    rect: { x: number; y: number; width: number; height: number }
+  ): Promise<void> => ipcRenderer.invoke('region-picker:submit', displayId, rect),
+  regionPickerCancel: (): Promise<void> => ipcRenderer.invoke('region-picker:cancel'),
   onStateUpdate: (handler: (state: AppState) => void): (() => void) => {
     const listener = (_e: Electron.IpcRendererEvent, state: AppState): void => handler(state)
     ipcRenderer.on(STATE_UPDATE_CHANNEL, listener)

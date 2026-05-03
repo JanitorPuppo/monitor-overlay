@@ -49,7 +49,7 @@ export function SourceList({ sources, statuses }: Props): ReactNode {
         <div>
           <div className="text-sm font-semibold text-neutral-100">Sources</div>
           <div className="text-xs text-neutral-400">
-            Top of the list renders behind; bottom renders in front.
+            Top of the list is the top layer; bottom renders behind.
           </div>
         </div>
         <Button onClick={openAdd} size="sm">
