@@ -22,6 +22,7 @@ function defaultOverlay(): OverlayConfig {
     displayId: primary.id,
     rect: null,
     outlineColor: DEFAULT_OUTLINE_COLOR,
+    outlineEnabled: true,
     sources: []
   }
 }
@@ -59,6 +60,7 @@ function migrate(raw: unknown): AppConfig {
             displayId: o.displayId ?? base.overlays[0].displayId,
             rect: o.rect ?? null,
             outlineColor: o.outlineColor ?? DEFAULT_OUTLINE_COLOR,
+            outlineEnabled: o.outlineEnabled ?? true,
             sources: Array.isArray(o.sources)
               ? o.sources.map((s) => ({
                   id: s.id ?? uuid(),

@@ -19,6 +19,7 @@ export type OverlayConfig = {
   displayId: number
   rect: RectConfig
   outlineColor: string
+  outlineEnabled: boolean
   sources: SourceConfig[]
 }
 
@@ -86,6 +87,7 @@ export type IpcChannels = {
   'config:set-display': (displayId: number) => void
   'config:set-rect': (rect: RectConfig) => void
   'config:set-outline-color': (color: string) => void
+  'config:set-outline-enabled': (enabled: boolean) => void
   'config:add-source': (input: AddSourceInput) => SourceConfig
   'config:update-source': (input: UpdateSourceInput) => void
   'config:remove-source': (id: string) => void

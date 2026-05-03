@@ -92,6 +92,14 @@ export function registerIpc(ctx: Ctx): void {
     broadcastState(ctx)
   })
 
+  ipcMain.handle('config:set-outline-enabled', (_e, enabled: boolean) => {
+    updateConfig((draft) => {
+      draft.overlays[0].outlineEnabled = enabled
+    })
+    overlay.setOverlay(getConfig().overlays[0])
+    broadcastState(ctx)
+  })
+
   ipcMain.handle('config:add-source', (_e, input: AddSourceInput): SourceConfig => {
     const source: SourceConfig = {
       id: uuid(),

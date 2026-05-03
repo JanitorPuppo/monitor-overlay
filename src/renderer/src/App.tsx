@@ -77,7 +77,9 @@ function App(): ReactNode {
           />
           <OutlineColorPicker
             color={overlay.outlineColor}
+            enabled={overlay.outlineEnabled}
             onChange={(color) => void window.api.setOutlineColor(color)}
+            onEnabledChange={(enabled) => void window.api.setOutlineEnabled(enabled)}
           />
         </CardContent>
       </Card>

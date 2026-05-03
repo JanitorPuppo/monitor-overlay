@@ -382,7 +382,7 @@ export class OverlayManager extends EventEmitter {
       rt.view.setBounds(visible ? fullRect : hiddenRect)
     }
     if (this.outlineView) {
-      this.outlineView.setBounds(fullRect)
+      this.outlineView.setBounds(this.overlay.outlineEnabled ? fullRect : hiddenRect)
     }
   }
 

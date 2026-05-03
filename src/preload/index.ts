@@ -17,6 +17,8 @@ const api = {
   setRect: (rect: RectConfig): Promise<void> => ipcRenderer.invoke('config:set-rect', rect),
   setOutlineColor: (color: string): Promise<void> =>
     ipcRenderer.invoke('config:set-outline-color', color),
+  setOutlineEnabled: (enabled: boolean): Promise<void> =>
+    ipcRenderer.invoke('config:set-outline-enabled', enabled),
   addSource: (input: AddSourceInput): Promise<SourceConfig> =>
     ipcRenderer.invoke('config:add-source', input),
   updateSource: (input: UpdateSourceInput): Promise<void> =>

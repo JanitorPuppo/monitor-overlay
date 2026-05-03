@@ -66,11 +66,12 @@ export function SourceRow({
       <button
         type="button"
         aria-label="Drag to reorder"
-        className="cursor-grab text-neutral-500 hover:text-neutral-200 active:cursor-grabbing"
+        title="Drag to reorder"
+        className="-my-2 -ml-2 flex w-7 shrink-0 cursor-grab touch-none items-center justify-center self-stretch rounded-l-md text-neutral-500 transition-colors hover:bg-neutral-800/80 hover:text-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-400/60 active:cursor-grabbing [&_svg]:pointer-events-none"
         {...attributes}
         {...listeners}
       >
-        <GripVertical className="h-4 w-4" />
+        <GripVertical className="h-5 w-5" />
       </button>
 
       <div
