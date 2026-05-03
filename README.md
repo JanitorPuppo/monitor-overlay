@@ -1,6 +1,6 @@
 # Monitor Overlay
 
-Renders arbitrary URLs as transparent, layered web sources directly onto a chosen monitor (or a sub-region of one). Built for use with [Remote Deck](https://remotedeck.gg), allowing streamers to collaborate with their producers when monitor space is limited. 
+Renders arbitrary URLs as transparent, layered web sources directly onto a chosen monitor (or a sub-region of one). Built for a cool use case found in [Remote Deck](https://remotedeck.gg), allowing streamers to collaborate with their producers when monitor space is limited. Also works with Stream elements overlays and any other websites you can think of.
 
 ## Features
 
