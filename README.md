@@ -35,8 +35,27 @@ npm run build:win
 
 ## Publish a release
 
-Set `GH_TOKEN` to a GitHub PAT with `repo` scope, bump `version` in `package.json`, then:
+Releases are cut by GitHub Actions on tag push (see `.github/workflows/release.yml`).
+The workflow installs deps, verifies the tag matches `package.json`, and runs
+`npm run publish:win` with the runner's auto-injected `GITHUB_TOKEN`.
 
-```bash
+```powershell
+# 1. Bump version in package.json (no leading "v")
+# 2. Commit the bump
+git commit -am "Bump to 0.2.0"
+
+# 3. Tag and push
+git tag v0.2.0
+git push origin main --tags
+```
+
+The Actions run uploads `monitor-overlay-<version>-setup.exe`, `latest.yml`, and
+the `.blockmap` to the corresponding GitHub Release. Installed copies pick up the
+new version on their next `electron-updater` check (every 6 hours, or on launch).
+
+To publish locally instead (no Actions), source a token from the `gh` CLI:
+
+```powershell
+$env:GH_TOKEN = (gh auth token)
 npm run publish:win
 ```
