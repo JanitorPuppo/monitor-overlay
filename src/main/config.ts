@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import { join } from 'path'
 import { v4 as uuid } from 'uuid'
 import log from './logger'
-import { DEFAULT_OUTLINE_COLOR } from '../shared/constants'
+import { DEFAULT_OUTLINE_COLOR, HOTKEY_DEFAULTS } from '../shared/constants'
 import type { AppConfig, OverlayConfig } from '../shared/types'
 
 const CONFIG_FILENAME = 'config.json'
@@ -26,11 +26,15 @@ function defaultOverlay(): OverlayConfig {
   }
 }
 
+function defaultHotkeys(): AppConfig['hotkeys'] {
+  return { ...HOTKEY_DEFAULTS }
+}
+
 function defaultConfig(): AppConfig {
   return {
     version: 1,
     overlays: [defaultOverlay()],
-    hotkeys: {},
+    hotkeys: defaultHotkeys(),
     autostart: false,
     overlayVisible: true,
     settingsOpenOnLaunch: true
@@ -41,6 +45,11 @@ function migrate(raw: unknown): AppConfig {
   const base = defaultConfig()
   if (!raw || typeof raw !== 'object') return base
   const obj = raw as Partial<AppConfig> & Record<string, unknown>
+  const userHotkeys = obj.hotkeys
+  const hotkeysIsEmpty =
+    !userHotkeys ||
+    typeof userHotkeys !== 'object' ||
+    Object.keys(userHotkeys as object).length === 0
   return {
     version: 1,
     overlays:
@@ -61,7 +70,7 @@ function migrate(raw: unknown): AppConfig {
               : []
           }))
         : base.overlays,
-    hotkeys: obj.hotkeys ?? {},
+    hotkeys: hotkeysIsEmpty ? defaultHotkeys() : userHotkeys,
     autostart: obj.autostart ?? false,
     overlayVisible: obj.overlayVisible ?? true,
     settingsOpenOnLaunch: obj.settingsOpenOnLaunch ?? true

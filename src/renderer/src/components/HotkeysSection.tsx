@@ -1,64 +1,78 @@
 import { ReactNode, useState } from 'react'
-import { Input } from './ui/input'
+import { RotateCcw, X } from 'lucide-react'
 import { Label } from './ui/label'
 import { Button } from './ui/button'
-import { X } from 'lucide-react'
+import { KeyCaptureButton } from './KeyCaptureButton'
+import { HOTKEY_DEFAULTS } from '../../../shared/constants'
 import type { HotkeyAction, HotkeyConfig } from '../../../shared/types'
 
-const ROWS: { action: HotkeyAction; label: string; placeholder: string }[] = [
-  { action: 'toggleVisibility', label: 'Toggle overlay visibility', placeholder: 'Ctrl+Alt+O' },
-  { action: 'reloadAll', label: 'Reload all sources', placeholder: 'Ctrl+Alt+R' },
-  { action: 'openSettings', label: 'Open settings', placeholder: 'Ctrl+Alt+,' }
+const ROWS: { action: HotkeyAction; label: string }[] = [
+  { action: 'toggleVisibility', label: 'Toggle overlay visibility' },
+  { action: 'reloadAll', label: 'Reload all sources' },
+  { action: 'openSettings', label: 'Open settings' }
 ]
 
 type Props = { hotkeys: HotkeyConfig }
 
 export function HotkeysSection({ hotkeys }: Props): ReactNode {
-  const [drafts, setDrafts] = useState<Record<string, string>>({})
+  const [capturingAction, setCapturingAction] = useState<HotkeyAction | null>(null)
 
-  const commit = (action: HotkeyAction, raw: string): void => {
-    const v = raw.trim()
-    void window.api.setHotkey(action, v.length > 0 ? v : null)
+  const setBinding = (action: HotkeyAction, accelerator: string | null): void => {
+    void window.api.setHotkey(action, accelerator)
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div>
         <div className="text-sm font-semibold text-neutral-100">Hotkeys</div>
         <div className="text-xs text-neutral-400">
-          Optional global shortcuts. Use Electron accelerator format (e.g. Ctrl+Alt+O,
-          CommandOrControl+Shift+R).
+          Click a binding to capture a new key combo. Defaults are filled in for fresh installs.
         </div>
       </div>
-      {ROWS.map(({ action, label, placeholder }) => {
-        const current = drafts[action] ?? hotkeys[action] ?? ''
-        return (
-          <div key={action} className="flex items-center gap-2">
-            <Label className="w-48 normal-case tracking-normal text-neutral-300">{label}</Label>
-            <Input
-              value={current}
-              placeholder={placeholder}
-              onChange={(e) => setDrafts((d) => ({ ...d, [action]: e.target.value }))}
-              onBlur={(e) => commit(action, e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') commit(action, (e.target as HTMLInputElement).value)
-              }}
-              className="font-mono"
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              title="Clear"
-              onClick={() => {
-                setDrafts((d) => ({ ...d, [action]: '' }))
-                void window.api.setHotkey(action, null)
-              }}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        )
-      })}
+
+      <div className="space-y-2">
+        {ROWS.map(({ action, label }) => {
+          const value = hotkeys[action] ?? ''
+          const defaultValue = HOTKEY_DEFAULTS[action]
+          const isDefault = value === defaultValue
+          const isCapturingThis = capturingAction === action
+          return (
+            <div key={action} className="flex items-center gap-2">
+              <Label className="w-48 normal-case tracking-normal text-neutral-300">
+                {label}
+              </Label>
+              <KeyCaptureButton
+                value={value}
+                capturing={isCapturingThis}
+                onStartCapture={() => setCapturingAction(action)}
+                onCapture={(accelerator) => {
+                  setBinding(action, accelerator)
+                  setCapturingAction(null)
+                }}
+                onCancel={() => setCapturingAction(null)}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                title={`Reset to default (${defaultValue})`}
+                onClick={() => setBinding(action, defaultValue)}
+                disabled={isDefault}
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Clear binding"
+                onClick={() => setBinding(action, null)}
+                disabled={!value}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
